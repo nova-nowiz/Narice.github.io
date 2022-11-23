@@ -1,0 +1,15 @@
+/* COLOR VARIABLES */
+// $background: mix($accent, #FDF2E9, 2%);
+$background: #dffbf7;
+$color: #000029;
+$border-color: #00002980;
+
+/* MEDIA QUERIES */
+$phone: "max-width: 684px";
+$tablet: "max-width: 900px";
+
+/* variables for js, must be the same as these in @custom-media queries */
+:root {
+  --phoneWidth: (max-width: 684px);
+  --tabletWidth: (max-width: 900px);
+}

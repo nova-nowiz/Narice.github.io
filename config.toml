@@ -1,0 +1,49 @@
+baseURL = 'http://Narice.github.io/'
+languageCode = 'en-us'
+title = "Narice's Blog"
+enableEmoji = true
+
+[module]
+  [[module.imports]]
+    path = "github.com/panr/hugo-theme-terminal"
+
+[markup.goldmark.renderer]
+  unsafe = true
+
+[params]
+  themeColor = "narice"
+  centerTheme = true
+  autoCover = false # must use page bundles
+  showLastUpdated = true
+  readingTime = true
+  Toc = true
+
+[languages]
+  [languages.en]
+    languageName = "English"
+    title = "Narice's Blog"
+    subtitle = "Narice's Blog"
+    owner = "Narice"
+    keywords = "blog elm nix nixos rust haskell idris ats granule grtt linear dependent typing type types"
+    copyright = ""
+    menuMore = "Show more"
+    readMore = "Read more"
+    readOtherPosts = "Read other posts"
+    newerPosts = "Newer posts"
+    olderPosts = "Older posts"
+    missingContentMessage = "Page not found..."
+    missingBackButtonLabel = "Back to home page"
+
+    [languages.en.params.logo]
+      logoText = "Narice's Blog"
+      logoHomeLink = "/"
+
+    # [languages.en.menu]
+    #   [[languages.en.menu.main]]
+    #     identifier = "about"
+    #     name = "About"
+    #     url = "/about"
+    #   [[languages.en.menu.main]]
+    #     identifier = "showcase"
+    #     name = "Showcase"
+    #     url = "/showcase"

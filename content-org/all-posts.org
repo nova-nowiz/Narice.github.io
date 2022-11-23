@@ -1,0 +1,203 @@
+#+hugo_base_dir: ../
+#+options: toc:nil creator:t d:t
+
+#+tags: [ emacs : org elisp ]
+#+tags: [ org : ox_hugo ]
+#+tags: [ nix : nixos devshell ]
+#+tags: [ linux : nixos ]
+#+tags: [ nixos : devos ]
+
+#+macro: twa @@html:<span class="twa twa-lg twa-$1"></span>@@
+
+* DONE How to setup =LOGBOOK= automation in =org-mode= :org:til:ox_hugo:
+:PROPERTIES:
+:EXPORT_FILE_NAME: org-mode-logbook
+:EXPORT_DESCRIPTION: This is a must for ox-hugo's timestamp generation! (creation & last modified)
+:END:
+:LOGBOOK:
+- State "DONE"       from "DOING"      [2022-11-23 mer. 19:51]
+- State "DOING"      from "DONE"       [2022-11-23 mer. 19:51]
+- State "DONE"       from "DOING"      [2022-11-19 sam. 01:29]
+- State "DOING"      from "DONE"       [2022-11-19 sam. 01:26]
+- State "DONE"       from "DOING"      [2022-11-19 sam. 01:20]
+- State "DOING"      from "WAIT"       [2022-11-19 sam. 01:20]
+- State "WAIT"       from "DOING"      [2022-11-19 sam. 01:19] \\
+  Here is the reason why I needed to wait!
+- State "DOING"      from "TODO"       [2022-11-19 sam. 01:19]
+- State "TODO"       from "DOING"      [2022-11-19 sam. 01:19]
+- State "DOING"      from "TODO"       [2022-11-19 sam. 01:19]
+- State "TODO"       from              [2022-11-17 jeu. 15:18]
+:END:
+** Introduction
+Using the =LOGBOOK= drawer is super simple and very useful for time logging.
+It is even automated by =org-mode= if setup correctly!
+I (re)discovered this feature of =org= when setting up this blog.
+Here is the blogging system that I'm using: =org-mode= + =ox-hugo= + =hugo=.
+
+=ox-hugo= is a very powerful tool for exporting an =org= file (or a bunch of them) to markdown files usable by =hugo= while retaining all the functionalities of =org-mode=.
+It also adds automation for certain tasks, such as taking care of generating the timestamps for the creation and last modification of articles.
+This is super useful!
+
+Even though I've set the =LOGBOOK= up for that purpose, with the following explanations, you will most likely be able to do whatever you want with =LOGBOOK= drawers :grin:.
+** The =LOGBOOK= drawer and =TODO= states
+For understanding how this system works, we first have to look at =TODO= states and the variable that allows you to change them.
+
+Here is some code that you can place in your =config.el= file:
+#+begin_src elisp
+(setq org-todo-keywords
+      '((sequence "TODO" "|" "DONE")))
+#+end_src
+It sets your keywords to =TODO= and =DONE=, the =|= in the middle is to indicate the separation between open/todo and closed/done states.
+This enables emacs to do fancy stuff such as greying-out the things that are done, or logging the time specifically when transitioning to a closed state.
+
+Here is some more code:
+#+begin_src elisp
+(setq org-todo-keywords
+      '((sequence "TODO(t)" "WAIT(w)" "|" "DONE(d)" "CANCELED(c)")))
+#+end_src
+So here, both the =DONE= and =CANCELED= state will be understood as closing the item.
+When having a healthy amount of keywords like this, I would avoid cycling between todo states with ~S-<left>~ and ~S-<right>~.
+An alternative to cycling between states is to use the =org-todo= function bound to ~C-c C-t~, or to ~SPC m t~ if you're on Doom Emacs.
+You can choose what shortcut letter will be used in the menu opened by =org-todo= by adding in your config a letter in parentheses after your todo states as seen above.
+
+Now we get onto the *real* fancy stuff :eyes:.
+#+begin_src elisp
+(setq org-todo-keywords
+      '((sequence "TODO(t)" "WAIT(w@/!)" "|" "DONE(d!)" "CANCELED(c@)")))
+#+end_src
+Here, you can see weird symbols after each letter in the parentheses, but don't fret! It's actually pretty easy.
+
+=@= symbols as in the =CANCELED= state means that when switching to this state, we will be prompted to create a note on why, in this case, the task was canceled.
+This note and the timestamp at which this action was performed will be stored in a special drawer called (you guessed it :upside_down:) =LOGBOOK=!
+
+The =!= symbol means that only the timestamp will be recorded, so you won't be prompted to make a note.
+
+Finally, what about this =@/!= syntax?
+Well, we'll actually call it the =enter/leave= syntax since it's actually a more global pattern.
+
+The =enter= part is the default behavior, so it will do what was explained above.
+
+The =leave= part, however, is triggered when *leaving* the state and *only if* the target state doesn't have =!= or =@=.
+
+Here are a couple of examples:
+- =TODO= -> =WAIT=: the =enter= part of =WAIT= is triggered, a timestamp and a note (that you will be prompted to enter) will be added to the =LOGBOOK=
+- =WAIT= -> =TODO=: the =leave= part of =WAIT= is triggered, a timestamp will be added to the =LOGBOOK=
+- =WAIT= -> =DONE=: the =enter= part of =DONE= is triggered, making the =leave= part of =WAIT= not triggering. A timestamp will be added to the =LOGBOOK=
+** But what's the result of doing this?
+First of all, here is my config:
+#+begin_src elisp
+(setq org-todo-keywords
+      '((sequence "TODO(t!)" "DOING(d!)" "WAIT(w@/@)" "|" "DONE(v!)" "CANCELLED(x!)"))
+#+end_src
+And now, here is a sample =LOGBOOK=:
+#+begin_src org
+:LOGBOOK:
+- State "DONE"       from "DOING"      [2022-11-19 sat. 01:20]
+- State "DOING"      from "WAIT"       [2022-11-19 sat. 01:20]
+- State "WAIT"       from "DOING"      [2022-11-19 sat. 01:19] \\
+  Here is the reason why I needed to wait!
+- State "DOING"      from "TODO"       [2022-11-19 sat. 01:19]
+- State "TODO"       from "DOING"      [2022-11-19 sat. 01:19]
+- State "DOING"      from "TODO"       [2022-11-19 sat. 01:19]
+- State "TODO"       from              [2022-11-17 thu. 15:18]
+:END:
+#+end_src
+Now, automated tools such as =ox-hugo= can take this information, and determine the creation and last edit timestamp of my posts :partying_face:!
+* DONE TIL: The Flatpak version of =qutebrowser= doesn't display colored emojis on my system! :nixos:qutebrowser:fonts:
+:PROPERTIES:
+:EXPORT_FILE_NAME: til-qute-flatpak-emojis
+:ID:       4a6000a2-886f-4a29-9dfe-78b98c1b6e2d
+:END:
+:LOGBOOK:
+- State "DONE"       from "DOING"      [2022-11-19 sam. 01:34]
+- State "DOING"      from "DONE"       [2022-11-19 sam. 01:34]
+- State "DONE"       from "TODO"       [2022-11-18 ven. 23:38]
+- State "TODO"       from              [2022-11-17 jeu. 20:35]
+:END:
+For me the Flatpak version of =qutebrowser= doesn't display colored emojis. \\
+It displays black & white emojis, but none in color :thinking:. \\
+Anyway, I thought I'd share this in case someone stumbles upon the same issue. \\
+My solution for now was to switch back to the non-flatpak version unfortunately :confused:.
+
+Here is the [[https://github.com/flathub/org.qutebrowser.qutebrowser/issues/263][github issue]] where I've posted this problem and some pics:
+[[attachment:_20221118_230436screenshot.png]]
+
+[[attachment:_20221118_230456screenshot.png]]
+
+* DONE TIL: Custom commands for DevOS's DevShell! :devos:devshell:
+:PROPERTIES:
+:EXPORT_FILE_NAME: devos-devshell-custom-commands
+:EXPORT_DESCRIPTION:  Build amazing dev tools super fast!
+:END:
+:LOGBOOK:
+- State "DONE"       from "DOING"      [2022-11-23 mer. 19:28]
+- State "DOING"      from "DONE"       [2022-11-23 mer. 19:28]
+- State "DONE"       from "TODO"       [2022-11-18 ven. 16:51]
+- State "TODO"       from              [2022-11-18 ven. 16:08]
+:END:
+** Introduction
+If you are using [[https://github.com/divnix/digga/tree/main/examples/devos][DevOS]] which is the official template for using [[https://github.com/divnix/digga][digga]], you may find that some friendlier commands are needed for example to rebuild your =NixOS= system.
+In this blog post, we'll cover exactly how to do that! :grin:
+** Implementation
+In your =<your-config>/shell/devos.nix= file, you will find a =commands= list, where you're be able to add your own set of commands:
+#+begin_src nix
+{ pkgs, extraModulesPath, inputs, lib, ... }:
+...
+{
+  ...
+  commands = [
+    ...
+    { # A command shipped with devos
+      category = "devos";
+      name = nvfetcher-bin.pname;
+      help = nvfetcher-bin.meta.description;
+      command = "cd $PRJ_ROOT/pkgs; ${nvfetcher-bin}/bin/nvfetcher -c ./sources.toml $@";
+    }
+    { # Our custom command!
+      category = "devos";
+      name = "switch";
+      help = "Makes rebuilding easy! | usage: switch <config>";
+      command = "sudo nixos-rebuild switch --flake .#$@";
+    }
+    ...
+  ]
+  ;
+}
+#+end_src
+In this case, we added a =switch= command!
+We provided a name for it, a help message, as well as the command that will be executed when using =switch=.
+
+After reloading the =envrc= using =direnv reload= in the command line, we get the following prompt:
+#+begin_src shell
+[devos]
+
+  agenix               - age-encrypted secrets for NixOS
+  cachix               - Command line client for Nix binary cache hosting https://cachix.org
+  deploy-rs            - A Simple multi-profile Nix-flake deploy tool
+  nix                  - Powerful package manager that makes package management reliable and reproducible
+  nixos-generators     - Collection of image builders
+  nvfetcher            - Generate nix sources expr for the latest version of packages
+  switch               - Makes rebuilding easy! | usage: switch <config>
+
+[docs]
+
+  mdbook               - Create books from MarkDown
+
+[general commands]
+
+  menu                 - prints this menu
+
+[linter]
+
+  editorconfig-checker - A tool to verify that your files are in harmony with your .editorconfig
+  nixpkgs-fmt          - Nix code formatter for nixpkgs
+#+end_src
+The custom =switch= command in under the =devos= section/category, with the help message that we wanted.
+
+** Results
+And we can now rebuild and switch to a new or different version of our NixOS/DevOS config super easily :partying_face:!
+#+begin_src shell
+switch <your-config>
+# Instead of:
+sudo nixos-rebuild switch --flake .#<your-config>
+#+end_src

@@ -1,0 +1,54 @@
+.my-links {
+  font-size: 1.9rem;
+}
+
+.my-links a {
+  text-decoration: none;
+}
+
+.img-round {
+  border-radius: 50%;
+}
+
+.author-logo {
+  height: 1.33em;
+  margin: auto;
+  margin-right: 5px;
+  border-radius: 50%;
+  display: inline-block;
+  vertical-align: text-bottom;
+}
+
+h1 {
+  color: var(--accent);
+  font-size: 1.5rem !important;
+}
+h2 {
+  color: var(--accent);
+  font-size: 1.4rem !important;
+}
+h3 {
+  color: var(--secondary);
+  font-size: 1.2rem !important;
+}
+h4 {
+  color: var(--secondary);
+  font-size: 1.1rem !important;
+}
+
+.yt-container {
+  width: 100%;
+  margin: auto;
+  padding-top: 56.25%;
+  position: relative;
+}
+
+.yt-container > iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  width: 100% !important;
+  height: 100% !important;
+}

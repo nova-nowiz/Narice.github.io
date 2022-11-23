@@ -1,0 +1,9 @@
+{{ with .Params.author }}
+    <span class="post-author"> ::
+        {{ if (reflect.IsSlice .) }}
+            <img class="author-logo" src="/narice.png"/>{{ delimit . ", " }}
+        {{ else }}
+            <img class="author-logo" src="/narice.png"/>{{ . }}
+        {{ end }}
+    </span>
+{{ end }}
