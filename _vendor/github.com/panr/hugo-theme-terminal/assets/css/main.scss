@@ -11,7 +11,7 @@ html {
 body {
   margin: 0;
   padding: 0;
-  font-family: 'Ubuntu', 'Twitter Color Emoji', Monaco, Consolas, Ubuntu Mono, monospace;
+  font-family: 'Ubuntu', Monaco, Consolas, Ubuntu Mono, monospace;
   font-size: 1.25rem;
   // line-height: 1.25;
   // letter-spacing: -0.02em;
@@ -27,6 +27,14 @@ body {
   @media ($phone) {
     font-size: 1rem;
   }
+}
+
+img.emoji {
+  display: unset;
+   height: 1em;
+   width: 1em;
+   margin: 0 .05em 0 .1em;
+   vertical-align: -0.1em;
 }
 
 .headings--one-size {
@@ -128,7 +136,7 @@ figure {
 }
 
 code, kbd {
-  font-family: 'Hack Nerd Font', Monaco, Consolas, Ubuntu Mono, monospace !important;
+  font-family: Hack, Monaco, Consolas, Ubuntu Mono, monospace !important;
   font-feature-settings: normal;
   background: #c0eff2;
   color: $accent;

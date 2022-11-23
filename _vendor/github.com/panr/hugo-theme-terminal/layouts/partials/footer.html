@@ -18,6 +18,7 @@
 {{ $bundle := slice $menu $prism | resources.Concat "bundle.js" | resources.Minify }}
 
 <script type="text/javascript" src="{{ $bundle.RelPermalink }}"></script>
+<script>twemoji.parse(document.body)</script>
 
 <!-- Extended footer section-->
 {{ partial "extended_footer.html" . }}
